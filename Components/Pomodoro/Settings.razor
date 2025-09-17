@@ -1,0 +1,23 @@
+@inherits SettingsComponentBase
+
+<h3>Settings</h3>
+
+<EditForm Model="SettingsFormModel" OnValidSubmit="SubmitForm" FormName="SettingsForm">
+    <DataAnnotationsValidator />
+    <div class="p-1">
+        <label>Pomodoro duration <InputNumber @bind-Value="SettingsFormModel.PomodoroDurationInMinutes" min="0" max="60" /> mins</label>
+    </div>
+    <div class="p-1">
+        <label>Rest duration <InputNumber @bind-Value="SettingsFormModel.RestDurationInMinutes" min="0" max="60" /> mins</label>
+    </div>
+    <div class="p-1">
+        <label>Long rest duration <InputNumber @bind-Value="SettingsFormModel.LongRestDurationInMinutes" min="0" max="60" /> mins</label>
+    </div>
+    <div class="p-1">
+        <label>Long rest after <InputNumber @bind-Value="SettingsFormModel.PomodorosCountToLongRest" min="2" max="10" /> intervals</label>
+    </div>
+    <div>
+        <button type="submit">Apply</button>
+    </div>
+    <ValidationSummary />
+</EditForm>

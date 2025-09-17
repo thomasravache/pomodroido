@@ -1,0 +1,11 @@
+@inherits TimerComponentBase
+
+<h3>Timer</h3>
+
+<p>@FormattedTime</p>
+
+<div class="p-1">
+    <button @onclick="StartTimer" disabled="@(IsTimerRunning)">Start</button>
+    <button @onclick="StopTimer" disabled="@(!IsTimerRunning)">Stop</button>
+    <button @onclick="OnClickResetTimer" disabled="@(!IsTimerRunning)">Reset</button>
+</div>

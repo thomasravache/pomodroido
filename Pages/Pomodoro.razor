@@ -1,0 +1,38 @@
+@using Pomodroido.Components.Pomodoro
+@using Pomodroido.Enums
+
+@attribute [Route(PageRoutes.Timer)]
+
+@inherits PomodoroComponentBase
+
+<PageTitle>Timer</PageTitle>
+
+<p>Actual: @CurrentInterval?.Type</p>
+
+<div>
+    <h3>Remaining Cycles:</h3>
+    <span>@(
+        string.Join(" - ", Cycle.Intervals
+            .Where(x => !x.Done).Select(x => x.Type switch
+            {
+                ECycleType.Pomodoro => "P",
+                ECycleType.Rest => "R",
+                ECycleType.LongRest => "LR",
+                _ => string.Empty
+            })
+        )
+    )</span>
+</div>
+
+<div class="mt-1">
+    <Timer
+        OnClickResetTimerFinished="@(() => FillPomodoroCycle(SettingsModel))"
+        OnFinishedInterval="FillNextCurrentInterval"
+        RemainingTime="@(TimeSpan.FromMinutes(CurrentInterval?.TimeInMinutes ?? 0))"
+    />
+</div>
+<div class="mt-1">
+    <Settings
+        OnSuccessfullSubmit="FillPomodoroCycle"
+    />
+</div>
