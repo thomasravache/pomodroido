@@ -10,7 +10,7 @@
 <p>Actual: @CurrentInterval?.Type</p>
 
 <div>
-    <h3>Remaining Cycles:</h3>
+    <h3>Remaining Intervals:</h3>
     <span>@(
         string.Join(" - ", Cycle.Intervals
             .Where(x => !x.Done).Select(x => x.Type switch
@@ -28,7 +28,8 @@
     <Timer
         OnClickResetTimerFinished="@(() => FillPomodoroCycle(SettingsModel))"
         OnFinishedInterval="FillNextCurrentInterval"
-        RemainingTime="@(TimeSpan.FromMinutes(CurrentInterval?.TimeInMinutes ?? 0))"
+        IntervalDuration="@(TimeSpan.FromMinutes(CurrentInterval?.TimeInMinutes ?? 0))"
+        Type="CurrentInterval?.Type ?? default"
     />
 </div>
 <div class="mt-1">

@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.Components;
-using Pomodroido.Models.Pomodoro.Settings;
+using Pomodroido.Enums;
 using Pomodroido.Services.JavaScript;
-using System.Threading.Tasks;
-using System.Timers;
 
 namespace Pomodroido.Components.Pomodoro;
 
-public class TimerComponentBase : ComponentBase
+public class TimerComponentBase : ComponentBase, IAsyncDisposable
 {
     #region Injections
     [Inject] private JsNotificationService _jsNotificationService { get; init; } = null!;
@@ -15,14 +13,24 @@ public class TimerComponentBase : ComponentBase
     #region Params
     [Parameter] public EventCallback OnFinishedInterval { get; set; }
     [Parameter] public EventCallback OnClickResetTimerFinished { get; set; }
-    [Parameter] public TimeSpan RemainingTime { get; set; }
+    [Parameter] public TimeSpan IntervalDuration { get; set; }
+    [Parameter] public ECycleType Type { get; set; }
     #endregion
 
     #region Props
     protected bool IsTimerRunning { get; set; } = false;
-    protected string FormattedTime => RemainingTime.ToString(@"hh\:mm\:ss");
+    protected string FormattedTime => RemainingTime > TimeSpan.Zero
+     ? RemainingTime.ToString(@"hh\:mm\:ss")
+     : "00:00:00";
 
-    private CancellationTokenSource? _cancellationTokenSource;
+    private System.Timers.Timer? _uiTimer;
+
+    private DateTime? _startTime;
+
+    protected TimeSpan RemainingTime =>
+        _startTime.HasValue
+            ? (_startTime.Value + IntervalDuration - DateTime.Now)
+            : IntervalDuration;
     #endregion
 
     #region LifeCycle
@@ -32,55 +40,67 @@ public class TimerComponentBase : ComponentBase
     }
     #endregion
 
-    protected async Task StartTimer()
+    protected void StartTimer()
     {
         if (IsTimerRunning) return;
 
         IsTimerRunning = true;
-        _cancellationTokenSource = new();
+        _startTime = DateTime.Now;
 
-        try
+        _uiTimer = new System.Timers.Timer(1000);
+        _uiTimer.Elapsed += (_, _) => InvokeAsync(UpdateUI);
+        _uiTimer.AutoReset = true;
+        _uiTimer.Start();
+
+    }
+
+    private async Task UpdateUI()
+    {
+        StateHasChanged();
+
+        if (RemainingTime <= TimeSpan.Zero)
         {
-            while (IsTimerRunning && RemainingTime.TotalSeconds > 0)
-            {
-                TimeSpan oneSecond = TimeSpan.FromSeconds(1);
-                await Task.Delay(oneSecond, _cancellationTokenSource.Token);
-                RemainingTime = RemainingTime.Subtract(oneSecond);
-                StateHasChanged();
-            }
+            StopTimer();
 
-            if (RemainingTime.TotalSeconds <= 0)
+            var (title, message) = Type switch
             {
-                await _jsNotificationService.TriggerNotification("Pomodoro Finalizado!", "Fim da contagem.");
-                await _jsNotificationService.PlayNotificationSound();
-                ResetTimer();
+                ECycleType.Pomodoro => ("Finished Pomodoro", "Time to take a rest!"),
+                ECycleType.Rest => ("Finished Rest", "Time to get back to work!"),
+                ECycleType.LongRest => ("Finished Long Rest", "Time to get back to work in another cycle!"),
+                _ => ("Finished Interval", string.Empty)
+            };
 
-                await OnFinishedInterval.InvokeAsync();
-            }
-        }
-        catch (TaskCanceledException)
-        {
-            // do nothing
+            await _jsNotificationService.TriggerNotification(title, message);
+            await _jsNotificationService.PlayNotificationSound();
+            await OnFinishedInterval.InvokeAsync();
         }
     }
+
+
+
 
     protected void StopTimer()
     {
         IsTimerRunning = false;
-        _cancellationTokenSource?.Cancel();
-        _cancellationTokenSource?.Dispose();
-        _cancellationTokenSource = null;
+
+        _uiTimer?.Stop();
+        _uiTimer?.Dispose();
+        _uiTimer = null;
+
+        _startTime = null;
     }
 
     protected async Task OnClickResetTimer()
     {
-        ResetTimer();
-        await OnClickResetTimerFinished.InvokeAsync();
-    }
-
-    private void ResetTimer()
-    {
         StopTimer();
         StateHasChanged();
+        await OnClickResetTimerFinished.InvokeAsync();
+    }
+    
+    public async ValueTask DisposeAsync()
+    {
+        StopTimer();
+        GC.SuppressFinalize(this);
+        await Task.CompletedTask;
     }
 }
