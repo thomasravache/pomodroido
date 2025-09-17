@@ -22,6 +22,6 @@ export function showNotification(title, body) {
 }
 
 export function playNotificationSound() {
-    const audio = new Audio('/sounds/confirmation-notification.wav');
+    const audio = new Audio('sounds/confirmation-notification.wav');
     audio.play();
 }
