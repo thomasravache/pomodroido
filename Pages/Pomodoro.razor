@@ -5,35 +5,38 @@
 
 @inherits PomodoroComponentBase
 
-<PageTitle>Timer</PageTitle>
+<PageTitle>Pomodroido - Timer</PageTitle>
 
-<p>Actual: @CurrentInterval?.Type</p>
+<div class="container w-50">
 
-<div>
-    <h3>Remaining Intervals:</h3>
-    <span>@(
-        string.Join(" - ", Cycle.Intervals
-            .Where(x => !x.Done).Select(x => x.Type switch
-            {
-                ECycleType.Pomodoro => "P",
-                ECycleType.Rest => "R",
-                ECycleType.LongRest => "LR",
-                _ => string.Empty
-            })
-        )
-    )</span>
-</div>
+    <div class="container d-flex flex-column align-items-center">
+        <p>Actual: @CurrentInterval?.Type</p>
+        <h4>Remaining Intervals</h4>
+        <span class="lead" style="font-size: 14px;">@(
+            string.Join(" - ", Cycle.Intervals
+                .Where(x => !x.Done).Select(x => x.Type switch
+                {
+                    ECycleType.Pomodoro => "P",
+                    ECycleType.Rest => "R",
+                    ECycleType.LongRest => "LR",
+                    _ => string.Empty
+                })
+            )
+        )</span>
+    </div>
 
-<div class="mt-1">
-    <Timer
-        OnClickResetTimerFinished="@(() => FillPomodoroCycle(SettingsModel))"
-        OnFinishedInterval="FillNextCurrentInterval"
-        IntervalDuration="@(TimeSpan.FromMinutes(CurrentInterval?.TimeInMinutes ?? 0))"
-        Type="CurrentInterval?.Type ?? default"
-    />
-</div>
-<div class="mt-1">
-    <Settings
-        OnSuccessfullSubmit="FillPomodoroCycle"
-    />
+    <div class="container d-flex flex-column align-items-center mt-3">
+        <Timer
+            OnClickResetTimerFinished="@(() => FillPomodoroCycle(SettingsModel))"
+            OnFinishedInterval="FillNextCurrentInterval"
+            IntervalDuration="@(TimeSpan.FromMinutes(CurrentInterval?.TimeInMinutes ?? 0))"
+            Type="CurrentInterval?.Type ?? default"
+        />
+    </div>
+
+    <div class="container d-flex flex-column align-items-center mt-3">
+        <Settings
+            OnSuccessfullSubmit="FillPomodoroCycle"
+        />
+    </div>
 </div>

@@ -1,23 +1,31 @@
 @inherits SettingsComponentBase
 
-<h3>Settings</h3>
+<h4>Settings</h4>
 
 <EditForm Model="SettingsFormModel" OnValidSubmit="SubmitForm" FormName="SettingsForm">
     <DataAnnotationsValidator />
-    <div class="p-1">
-        <label>Pomodoro duration <InputNumber @bind-Value="SettingsFormModel.PomodoroDurationInMinutes" min="0" max="60" /> mins</label>
+    <div class="input-group">
+        <span class="input-group-text">Pomodoro duration</span>
+        <InputNumber class="form-control" @bind-Value="SettingsFormModel.PomodoroDurationInMinutes" min="1" max="60" />
+        <span class="input-group-text">mins</span>
     </div>
-    <div class="p-1">
-        <label>Rest duration <InputNumber @bind-Value="SettingsFormModel.RestDurationInMinutes" min="0" max="60" /> mins</label>
+    <div class="input-group mt-1">
+        <span class="input-group-text">Rest duration</span>
+        <InputNumber class="form-control" @bind-Value="SettingsFormModel.RestDurationInMinutes" min="1" max="60" />
+        <span class="input-group-text">mins</span>
     </div>
-    <div class="p-1">
-        <label>Long rest duration <InputNumber @bind-Value="SettingsFormModel.LongRestDurationInMinutes" min="0" max="60" /> mins</label>
+    <div class="input-group mt-1">
+        <span class="input-group-text">Long rest duration</span>
+        <InputNumber class="form-control" @bind-Value="SettingsFormModel.LongRestDurationInMinutes" min="1" max="60" />
+        <span class="input-group-text">mins</span>
     </div>
-    <div class="p-1">
-        <label>Long rest after <InputNumber @bind-Value="SettingsFormModel.PomodorosCountToLongRest" min="2" max="10" /> intervals</label>
+    <div class="input-group mt-1">
+        <span class="input-group-text">Long rest after</span>
+        <InputNumber class="form-control" @bind-Value="SettingsFormModel.PomodorosCountToLongRest" min="2" max="10" />
+        <span class="input-group-text">mins</span>
     </div>
-    <div>
-        <button type="submit">Apply</button>
+    <div class="d-grid gap-2 mt-2">
+        <button type="submit" class="btn btn-primary">Apply</button>
     </div>
     <ValidationSummary />
 </EditForm>
