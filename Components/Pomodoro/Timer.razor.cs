@@ -31,6 +31,8 @@ public class TimerComponentBase : ComponentBase, IAsyncDisposable
         _startTime.HasValue
             ? (_startTime.Value + IntervalDuration - DateTime.Now)
             : IntervalDuration;
+
+    private TimeSpan? _remainingTimeWhenStop;
     #endregion
 
     #region LifeCycle
@@ -45,13 +47,21 @@ public class TimerComponentBase : ComponentBase, IAsyncDisposable
         if (IsTimerRunning) return;
 
         IsTimerRunning = true;
-        _startTime = DateTime.Now;
+
+        if (_remainingTimeWhenStop.HasValue)
+        {
+            _startTime = DateTime.Now - (IntervalDuration - _remainingTimeWhenStop.Value);
+            _remainingTimeWhenStop = null;
+        }
+        else
+        {
+            _startTime = DateTime.Now;
+        }
 
         _uiTimer = new System.Timers.Timer(1000);
         _uiTimer.Elapsed += (_, _) => InvokeAsync(UpdateUI);
         _uiTimer.AutoReset = true;
         _uiTimer.Start();
-
     }
 
     private async Task UpdateUI()
@@ -60,7 +70,7 @@ public class TimerComponentBase : ComponentBase, IAsyncDisposable
 
         if (RemainingTime <= TimeSpan.Zero)
         {
-            StopTimer();
+            ResetTimer();
 
             var (title, message) = Type switch
             {
@@ -83,23 +93,32 @@ public class TimerComponentBase : ComponentBase, IAsyncDisposable
     {
         IsTimerRunning = false;
 
+        _remainingTimeWhenStop = RemainingTime;
+
         _uiTimer?.Stop();
         _uiTimer?.Dispose();
         _uiTimer = null;
-
-        _startTime = null;
     }
 
     protected async Task OnClickResetTimer()
     {
-        StopTimer();
+        ResetTimer();
         StateHasChanged();
         await OnClickResetTimerFinished.InvokeAsync();
     }
+
+    protected void ResetTimer()
+    {
+        StopTimer();
+        _startTime = null;
+        _remainingTimeWhenStop = null;
+        StateHasChanged();
+    }
+
     
     public async ValueTask DisposeAsync()
     {
-        StopTimer();
+        ResetTimer();
         GC.SuppressFinalize(this);
         await Task.CompletedTask;
     }

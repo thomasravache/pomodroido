@@ -5,11 +5,11 @@ namespace Pomodroido.Models.Pomodoro.Settings;
 public record SettingsModel
 {
     [Required]
-    public int PomodoroDurationInMinutes { get; set; } = 25;
+    public double PomodoroDurationInMinutes { get; set; } = 25;
     [Required]
-    public int RestDurationInMinutes { get; set; } = 5;
+    public double RestDurationInMinutes { get; set; } = 5;
     [Required]
-    public int LongRestDurationInMinutes { get; set; } = 15;
+    public double LongRestDurationInMinutes { get; set; } = 15;
     [Required]
     public int PomodorosCountToLongRest { get; set; } = 4;
 }

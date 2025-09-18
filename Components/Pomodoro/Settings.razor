@@ -6,17 +6,17 @@
     <DataAnnotationsValidator />
     <div class="input-group">
         <span class="input-group-text">Pomodoro duration</span>
-        <InputNumber class="form-control" @bind-Value="SettingsFormModel.PomodoroDurationInMinutes" min="1" max="60" />
+        <InputNumber class="form-control" @bind-Value="SettingsFormModel.PomodoroDurationInMinutes" min="0.5" max="60" />
         <span class="input-group-text">mins</span>
     </div>
     <div class="input-group mt-1">
         <span class="input-group-text">Rest duration</span>
-        <InputNumber class="form-control" @bind-Value="SettingsFormModel.RestDurationInMinutes" min="1" max="60" />
+        <InputNumber class="form-control" @bind-Value="SettingsFormModel.RestDurationInMinutes" min="0.5" max="60" />
         <span class="input-group-text">mins</span>
     </div>
     <div class="input-group mt-1">
         <span class="input-group-text">Long rest duration</span>
-        <InputNumber class="form-control" @bind-Value="SettingsFormModel.LongRestDurationInMinutes" min="1" max="60" />
+        <InputNumber class="form-control" @bind-Value="SettingsFormModel.LongRestDurationInMinutes" min="0.5" max="60" />
         <span class="input-group-text">mins</span>
     </div>
     <div class="input-group mt-1">
