@@ -107,7 +107,7 @@ public class TimerComponentBase : ComponentBase, IAsyncDisposable
         await OnClickResetTimerFinished.InvokeAsync();
     }
 
-    protected void ResetTimer()
+    public void ResetTimer()
     {
         StopTimer();
         _startTime = null;

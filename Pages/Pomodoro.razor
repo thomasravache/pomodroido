@@ -27,6 +27,7 @@
 
     <div class="container d-flex flex-column align-items-center mt-3">
         <Timer
+            @ref="TimerRef"
             OnClickResetTimerFinished="@(() => FillPomodoroCycle(SettingsModel))"
             OnFinishedInterval="FillNextCurrentInterval"
             IntervalDuration="@(TimeSpan.FromMinutes(CurrentInterval?.TimeInMinutes ?? 0))"

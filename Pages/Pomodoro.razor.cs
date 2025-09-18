@@ -7,6 +7,7 @@ namespace Pomodroido.Pages;
 
 public class PomodoroComponentBase : ComponentBase
 {
+    protected Components.Pomodoro.Timer? TimerRef { get; set; }
     protected PomodoroCycleModel Cycle { get; set; } = new();
     protected PomodoroIntervalModel? CurrentInterval { get; set; }
     protected SettingsModel SettingsModel { get; set; } = new();
@@ -38,6 +39,8 @@ public class PomodoroComponentBase : ComponentBase
 
     protected void FillPomodoroCycle(SettingsModel settings)
     {
+        TimerRef?.ResetTimer();
+        
         Cycle.Intervals.Clear();
         SettingsModel = settings with { };
         int lastOrder = 1;
